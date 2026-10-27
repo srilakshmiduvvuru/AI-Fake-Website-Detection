@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Fake Website Detection</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main class="container">
+    <div class="badge">AI • CYBERSECURITY DEMO</div>
+    <h1>Fake Website Detection</h1>
+    <p class="subtitle">Check a website URL for common phishing and deception warning signs.</p>
+
+    <form method="POST" class="scan-form">
+      <label for="url">Website URL</label>
+      <div class="input-row">
+        <input id="url" name="url" type="text" placeholder="https://example.com" required
+               value="{{ result.url if result and result.url else '' }}">
+        <button type="submit">Scan URL</button>
+      </div>
+      <p class="hint">Example: https://www.google.com</p>
+    </form>
+
+    {% if result %}
+      {% if result.error %}
+        <section class="result warning">
+          <h2>Check the URL</h2>
+          <p>{{ result.error }}</p>
+        </section>
+      {% else %}
+        <section class="result {{ result.css_class }}">
+          <div class="result-top">
+            <div>
+              <p class="eyebrow">SCAN RESULT</p>
+              <h2>{{ result.verdict }}</h2>
+            </div>
+            <div class="score">{{ result.score }}<small>/100 risk score</small></div>
+          </div>
+          <p class="summary">{{ result.summary }}</p>
+          <p class="domain"><strong>Domain checked:</strong> {{ result.host }}</p>
+          <h3>Signals found</h3>
+          <ul>
+            {% for reason in result.reasons %}
+              <li>{{ reason }}</li>
+            {% endfor %}
+          </ul>
+        </section>
+      {% endif %}
+    {% endif %}
+
+    <section class="examples">
+      <h3>Try a test URL</h3>
+      <div class="chips">
+        <button type="button" class="chip" data-url="https://www.google.com">Google</button>
+        <button type="button" class="chip" data-url="https://www.wikipedia.org">Wikipedia</button>
+        <button type="button" class="chip" data-url="http://secure-login-check.example/login">Demo suspicious URL</button>
+      </div>
+    </section>
+
+    <footer>
+      <strong>Important:</strong> This is an educational demo using simple URL rules, not a reliable production AI detector.
+      It does not visit or verify the website. A low score does not guarantee safety. Never enter passwords or payment details
+      based only on this result.
+    </footer>
+  </main>
+  <script>
+    document.querySelectorAll("[data-url]").forEach(function(button) {
+      button.addEventListener("click", function() {
+        document.getElementById("url").value = button.dataset.url;
+        document.getElementById("url").focus();
+      });
+    });
+  </script>
+</body>
+</html>
